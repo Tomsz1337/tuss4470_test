@@ -10,21 +10,6 @@
 #define SPI_RX_PIN 		4
 #define SPI_CSn_PIN 	5
 
-#define BPF_CONFIG_1_addr		0x10
-#define BPF_CONFIG_2_addr 		0x11
-#define DEV_CTRL_1_addr 		0x12  
-#define DEV_CTRL_2_addr 		0x13
-#define DEV_CTRL_3_addr 		0x14
-#define VDRV_CTRL_addr 			0x16
-#define ECHO_INT_CONFIG_addr	0x17
-#define ZC_CONFIG_addr 			0x18
-#define BURST_PULSE_addr 		0x1A
-#define TOF_CONFIG_addr 		0x1B
-#define DEV_STAT_addr 			0x1C
-#define DEVICE_ID_addr 			0x1D
-#define REV_ID_addr 			0x1E
-
-
 void SPI_config(struct SPI_FrameParams *sParams)
 {
 	gpio_set_function(SPI_SCK_PIN, GPIO_FUNC_SPI);
@@ -60,7 +45,7 @@ void TUSS4470_write(uint8_t addr, uint8_t data, uint8_t *pucTXbuff)
 	pucTXbuff[0] |= SPI_oddParity(pucTXbuff[0], pucTXbuff[1]); 
 
 	gpio_put(SPI_CSn_PIN, false);
-	spi_write_blocking(SPI_X, pucTXbuff, sizeof(pucTXbuff));
+	spi_write_blocking(SPI_X, pucTXbuff, 2);
 	gpio_put(SPI_CSn_PIN, true);
 }
 
