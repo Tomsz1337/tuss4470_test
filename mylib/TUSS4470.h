@@ -1,6 +1,7 @@
 #ifndef TUSS4470_H
 #define TUSS4470_H
 #include "stdint.h"
+#include "spi_hal.h"
 
 #define BPF_CONFIG_1_addr		0x10
 #define BPF_CONFIG_2_addr 		0x11
@@ -15,8 +16,6 @@
 #define DEV_STAT_addr 			0x1C
 #define DEVICE_ID_addr 			0x1D
 #define REV_ID_addr 			0x1E
-
-
 
 typedef struct
 {

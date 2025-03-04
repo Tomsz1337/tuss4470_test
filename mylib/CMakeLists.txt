@@ -2,6 +2,7 @@ add_library(mylib INTERFACE)
 
 target_sources(mylib INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/TUSS4470.c
+    ${CMAKE_CURRENT_LIST_DIR}/spi_hal.c
 )
 
 target_include_directories(mylib INTERFACE ${CMAKE_CURRENT_LIST_DIR})

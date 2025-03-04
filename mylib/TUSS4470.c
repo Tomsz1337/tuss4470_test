@@ -1,21 +1,17 @@
 #include "TUSS4470.h"
-#include "stdint.h"
-#include "spi_hal.h"
 
-void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff)
+uint8_t SPI_oddParity(uint8_t hNibble, uint8_t lNibble)
 {
-	SPI_HAL_init(sSettings->TUSS4470_SPI_Config);
-
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, BPF_CONFIG_1_addr, sSettings->BPF_CONFIG_1, tx_buff);
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, BPF_CONFIG_2_addr, sSettings->BPF_CONFIG_2, tx_buff);
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, DEV_CTRL_1_addr, sSettings->DEV_CTRL_1, tx_buff);
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, DEV_CTRL_2_addr, sSettings->DEV_CTRL_2, tx_buff);
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, DEV_CTRL_3_addr, sSettings->DEV_CTRL_3, tx_buff);
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, VDRV_CTRL_addr, sSettings->VDRV_CTRL, tx_buff);
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, ECHO_INT_CONFIG_addr, sSettings->ECHO_INT_CONFIG, tx_buff);
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, ZC_CONFIG_addr, sSettings->ZC_CONFIG, tx_buff);
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, BURST_PULSE_addr, sSettings->BURST_PULSE, tx_buff);
-	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, TOF_CONFIG_addr, sSettings->TOF_CONFIG, tx_buff);
+	uint16_t SPIframe = (hNibble << 8) | lNibble;
+	uint8_t ones = 0;
+	for(int i = 0; i < 16; i++)
+	{
+		if((SPIframe >> i) & 1)
+		{
+			ones++;
+		}
+	}
+	return (ones + 1) % 2;
 }
 
 void TUSS4470_write(TUSS4470_settings *sSettings, uint8_t addr, uint8_t data, uint8_t *tx_buff)
@@ -36,23 +32,20 @@ void TUSS4470_read(TUSS4470_settings *sSettings, uint8_t addr, uint8_t *tx_buff,
 	SPI_HAL_read(sSettings->TUSS4470_SPI_Config, tx_buff, rx_buff, 2);
 
 }
-/*
-void TUSS4470_status(uint8_t *tx_buff, uint8_t *rx_buff)
+
+void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 {
-	TUSS4470_read(DEV_STAT_addr, tx_buff, rx_buff);
-}
-*/
-uint8_t SPI_oddParity(uint8_t hNibble, uint8_t lNibble)
-{
-	uint16_t SPIframe = (hNibble << 8) | lNibble;
-	uint8_t ones = 0;
-	for(int i = 0; i < 16; i++)
-	{
-		if((SPIframe >> i) & 1)
-		{
-			ones++;
-		}
-	}
-	return (ones + 1) % 2;
+	SPI_HAL_init(sSettings->TUSS4470_SPI_Config);
+
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, BPF_CONFIG_1_addr, sSettings->BPF_CONFIG_1, tx_buff);
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, BPF_CONFIG_2_addr, sSettings->BPF_CONFIG_2, tx_buff);
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, DEV_CTRL_1_addr, sSettings->DEV_CTRL_1, tx_buff);
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, DEV_CTRL_2_addr, sSettings->DEV_CTRL_2, tx_buff);
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, DEV_CTRL_3_addr, sSettings->DEV_CTRL_3, tx_buff);
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, VDRV_CTRL_addr, sSettings->VDRV_CTRL, tx_buff);
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, ECHO_INT_CONFIG_addr, sSettings->ECHO_INT_CONFIG, tx_buff);
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, ZC_CONFIG_addr, sSettings->ZC_CONFIG, tx_buff);
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, BURST_PULSE_addr, sSettings->BURST_PULSE, tx_buff);
+	TUSS4470_write(sSettings->TUSS4470_SPI_Config->spi, TOF_CONFIG_addr, sSettings->TOF_CONFIG, tx_buff);
 }
 
