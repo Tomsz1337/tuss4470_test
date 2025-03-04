@@ -36,12 +36,12 @@ void TUSS4470_read(TUSS4470_settings *sSettings, uint8_t addr, uint8_t *tx_buff,
 	SPI_HAL_read(sSettings->TUSS4470_SPI_Config, tx_buff, rx_buff, 2);
 
 }
-
+/*
 void TUSS4470_status(uint8_t *tx_buff, uint8_t *rx_buff)
 {
 	TUSS4470_read(DEV_STAT_addr, tx_buff, rx_buff);
 }
-
+*/
 uint8_t SPI_oddParity(uint8_t hNibble, uint8_t lNibble)
 {
 	uint16_t SPIframe = (hNibble << 8) | lNibble;
