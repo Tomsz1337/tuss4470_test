@@ -16,16 +16,12 @@
 #define DEVICE_ID_addr 			0x1D
 #define REV_ID_addr 			0x1E
 
-typedef struct SPI_FrameParams
-{
-    uint8_t ucCpha;
-	uint8_t ucCpol;
-	uint8_t ucClsbf;
-	uint32_t BAUD_RATE;
-}SPI_FrameParams;
 
-struct TUSS4470_settings
+
+typedef struct
 {
+	SPI_Config *TUSS4470_SPI_Config;
+
 	uint8_t BPF_CONFIG_1;/*
 	7	BPF_FC_TRIM_FRC R/W 0x0 Override factor settings for Bandpass filter trim and control via BPF_FC_TRIM register. Valid only when BPF_BYPASS = 0
 			0x0 = Factory trim
@@ -159,12 +155,7 @@ struct TUSS4470_settings
 			0x0 = Disable burst mode
 			0x1 = Enable burst mode
 	*/
-};
+}TUSS4470_settings;
 
-void SPI_config(struct SPI_FrameParams *sParams);
-void TUSS4470_write(uint8_t addr, uint8_t data, uint8_t *pucTXbuff);
-void TUSS4470_read(uint8_t addr, uint8_t *pucTXbuff, uint8_t *pucRXbuff);
-void TUSS4470_settings(struct TUSS4470_settings *sSettings, uint8_t *pucTXbuff);
-void TUSS4470_status(uint8_t *pucTXbuff, uint8_t *pucRXbuff);
 
 #endif
