@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 typedef void *SPI_Type;
-typedef struct{
+typedef struct SPI_Config{
     SPI_Type spi;
     uint8_t cpha;
 	uint8_t cpol;

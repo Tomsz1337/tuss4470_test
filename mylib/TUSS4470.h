@@ -2,6 +2,7 @@
 #define TUSS4470_H
 #include "stdint.h"
 #include "spi_hal.h"
+#include "hardware/spi.h"
 
 #define BPF_CONFIG_1_addr		0x10
 #define BPF_CONFIG_2_addr 		0x11
@@ -17,7 +18,7 @@
 #define DEVICE_ID_addr 			0x1D
 #define REV_ID_addr 			0x1E
 
-typedef struct
+typedef struct TUSS4470_settings
 {
 	SPI_Config *TUSS4470_SPI_Config;
 
@@ -156,5 +157,8 @@ typedef struct
 	*/
 }TUSS4470_settings;
 
+void TUSS4470_write(TUSS4470_settings *sSettings, uint8_t addr, uint8_t data, uint8_t *tx_buff);
+void TUSS4470_read(TUSS4470_settings *sSettings, uint8_t addr, uint8_t *tx_buff, uint8_t *rx_buff);
+void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff);
 
 #endif
