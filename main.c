@@ -26,20 +26,27 @@ int main()
     gpio_put(25, 1);
 
     sSettings.TUSS4470_SPI_Config.baud_rate = 1000000;
-    sSettings.TUSS4470_SPI_Config.cpha = 0;
+    sSettings.TUSS4470_SPI_Config.cpha = 1;
     sSettings.TUSS4470_SPI_Config.cpol = 0;
     sSettings.TUSS4470_SPI_Config.csbf = 0;
     sSettings.TUSS4470_SPI_Config.data_bits = 8;
     sSettings.TUSS4470_SPI_Config.spi = spi0;
+    //SPI_HAL_init(&sSettings.TUSS4470_SPI_Config);
 
-    sSettings.BPF_CONFIG_1 = 0xaa;
+    sSettings.BPF_CONFIG_1 = 0x1E;      // BFP factory trirm | BFP - on | BFP center frequency = 206.05 kHz |
+    sSettings.VDRV_CTRL = 0x01;         // VDRV - on | Voltage = 6V
+    sSettings.BURST_PULSE = 0xC0;       // HALF_BRIDGE_MODE - on | PRE_DRIVER - on
+
+
 
     TUSS4470_init(&sSettings, tx_buff);
 
     while(1)
     {  
         gpio_put(25, 0);
-        TUSS4470_write(&sSettings, BPF_CONFIG_1_addr, sSettings.BPF_CONFIG_1, tx_buff);
+        TUSS4470_read(&sSettings, DEVICE_ID_addr, tx_buff, rx_buff);
+        TUSS4470_read(&sSettings, REV_ID_addr, tx_buff, rx_buff);
+        TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
         sleep_ms(500);
         gpio_put(25, 1);
         sleep_ms(500);

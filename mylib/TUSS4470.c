@@ -47,6 +47,4 @@ void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 	TUSS4470_write(sSettings, ZC_CONFIG_addr, sSettings->ZC_CONFIG, tx_buff);
 	TUSS4470_write(sSettings, BURST_PULSE_addr, sSettings->BURST_PULSE, tx_buff);
 	TUSS4470_write(sSettings, TOF_CONFIG_addr, sSettings->TOF_CONFIG, tx_buff);
-
 }
-
