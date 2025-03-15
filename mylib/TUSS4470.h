@@ -1,6 +1,5 @@
 #ifndef TUSS4470_H
 #define TUSS4470_H
-#include "stdint.h"
 #include "spi_hal.h"
 #include "hardware/spi.h"
 
@@ -20,9 +19,9 @@
 
 typedef struct TUSS4470_settings
 {
-	SPI_Config *TUSS4470_SPI_Config;
+	SPI_Config TUSS4470_SPI_Config;
 
-	uint8_t BPF_CONFIG_1;/*
+	volatile unsigned char BPF_CONFIG_1;/*
 	7	BPF_FC_TRIM_FRC R/W 0x0 Override factor settings for Bandpass filter trim and control via BPF_FC_TRIM register. Valid only when BPF_BYPASS = 0
 			0x0 = Factory trim
 			0x1 = Override Factory trim
@@ -37,7 +36,7 @@ typedef struct TUSS4470_settings
 				0x20 - 0x2F - 50kHz
 				0x30 - 0x3F - 100kHz
 	*/
-	uint8_t BPF_CONFIG_2;/*
+	unsigned char BPF_CONFIG_2;/*
 	7:6 RESERVED R 0x0 Reserved
 	5:4 BPF_Q_SEL R/W 0x0 Bandpass filter Q factor. Valid only when BPF_BYPASS = 0
 			0x0 = 4
@@ -46,7 +45,7 @@ typedef struct TUSS4470_settings
 			0x3 = 3
 	3:0 BPF_FC_TRIM R/W 0x0 Offset BPF_HPF_FREQ when BPF_FC_TRIM_FRC = 1: BPF_HPF_FREQ = BPF_HPF_FREQ + BPF_FC_TRIM See "Bandpass filter center frequency range extension" table.
 	*/
-	uint8_t DEV_CTRL_1;/*
+	unsigned char DEV_CTRL_1;/*
 	7	LOGAMP_FRC R/W 0x0 Override for factory settings for LOGAMP_SLOPE_ADJ and LOGAMP_INT_ADJ
 	6:4 LOGAMP_SLOPE_ADJ R/W 0x0 Slope or gain adjustment at the final output on VOUT pin. Slope adjustment depends on the setting of VOUT_SCALE_SEL.
 			0x0 = 3.0× VOUT_SCALE_SEL+4.56×VOUT_SCALE_SEL V/V
@@ -59,7 +58,7 @@ typedef struct TUSS4470_settings
 			0x7 = 2.9× VOUT_SCALE_SEL+4.4×VOUT_SCALE_SEL V/V
 	3:0 LOGAMP_INT_ADJ R/W 0x0 Logamp Intercept adjustment. See "Logamp intercept adjustment" table in specification for values.
 	*/
-	uint8_t DEV_CTRL_2;/*
+	unsigned char DEV_CTRL_2;/*
 	7	LOGAMP_DIS_FIRST R/W 0x0 Disable first logamp stage to reduce quiescent current
 	6 	LOGAMP_DIS_LAST R/W 0x0 Disable last logamp stage quiescent current
 	3 	RESERVED R 0x0 Reserved
@@ -72,7 +71,7 @@ typedef struct TUSS4470_settings
 			0x2 = 20 V/V
 			0x3 = 12.5 V/V
 	*/
-	uint8_t DEV_CTRL_3;/*
+	unsigned char DEV_CTRL_3;/*
 	4:2 DRV_PLS_FLT_DT R/W 0x0 Driver Pulse Fault Deglitch Time.
 			In IO_MODE = 0 or IO_MODE = 1, DRV_PULSE_FLT will be set if
 			start of burst is triggered and IO2 pin has not toggled for greater than
@@ -94,7 +93,7 @@ typedef struct TUSS4470_settings
 			0x2 = IOMODE 2
 			0x3 = IOMODE 3
 	*/
-	uint8_t VDRV_CTRL;/*
+	unsigned char VDRV_CTRL;/*
 	7	RESERVED R 0x0 Reserved
 	6	DIS_VDRV_REG_LSTN R/W 0x0 Automatically disable VDRV charging in listen mode every time after burst mode is exited given VDRV_TRIGGER =0x0.
 			0x0 = Do not automatically disable VDRV charging
@@ -107,14 +106,14 @@ typedef struct TUSS4470_settings
 			0x1 = 20 mA
 	3:0 VDRV_VOLTAGE_LEVEL R/W 0x0 Regulated Voltage at VDRV pin Value is calculated as : VDRV = VDRV_VOLTAGE_LEVEL + 5 [V]
 	*/
-	uint8_t ECHO_INT_CONFIG;/*
+	unsigned char ECHO_INT_CONFIG;/*
 	7:5 RESERVED R 0x0 Reserved
 	4 	ECHO_INT_CMP_EN R/W 0x0 Enable echo interrupt comparator output
 	3:0 ECHO_INT_THR_SEL R/W 0x7 Threshold level to issue interrupt on OUT4 pin. Applied to Low pass filter output.
 			If VOUT_SCALE_SEL=0x0 : Threshold = 0.04 x ECHO_INT_THR_SEL + 0.4 [V]
 			If VOUT_SCALE_SEL=0x1 : Threshold = 0.06 x ECHO_INT_THR_SEL + 0.6 [V]
 	*/
-	uint8_t ZC_CONFIG;/*
+	unsigned char ZC_CONFIG;/*
 	7 	ZC_CMP_EN R/W 0x0 Enable Zero Cross Comparator for Frequency detection
 	6 	ZC_EN_ECHO_INT R/W 0x0 When set, provides ZC information only when object is detected
 	5 	ZC_CMP_IN_SEL R/W 0x0 Zero Comparator Input Select
@@ -131,7 +130,7 @@ typedef struct TUSS4470_settings
 			0x6 = 330 mV
 			0x7 = 380 mV
 	*/
-	uint8_t BURST_PULSE;/*
+	unsigned char BURST_PULSE;/*
 	7 	HALF_BRG_MODE R/W 0x0 Use output driver in half-bridge mode. When enabled, drive both high-side FET together and low-side FETs together.
 			0x0 = Disable half-bridge mode
 			0x1 = Enable half bridge mode
@@ -140,7 +139,7 @@ typedef struct TUSS4470_settings
 			0x1 = Enable pre-driver mode
 	5:0 BURST_PULSE R/W 0x0 Number of burst pulses. REG_VALUE=0x00 enables continuous burst mode
 	*/
-	uint8_t TOF_CONFIG;/*
+	unsigned char TOF_CONFIG;/*
 	7 	SLEEP_MODE_EN R/W 0x0 For entering or exiting sleep mode
 			0x0 = Wake up or exit Sleep Mode
 			0x1 = Enter sleep mode
@@ -157,8 +156,8 @@ typedef struct TUSS4470_settings
 	*/
 }TUSS4470_settings;
 
-void TUSS4470_write(TUSS4470_settings *sSettings, uint8_t addr, uint8_t data, uint8_t *tx_buff);
-void TUSS4470_read(TUSS4470_settings *sSettings, uint8_t addr, uint8_t *tx_buff, uint8_t *rx_buff);
-void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff);
-
+void TUSS4470_write(TUSS4470_settings *sSettings, unsigned char addr, unsigned char register_data, unsigned char *tx_buff);
+void TUSS4470_read(TUSS4470_settings *sSettings, unsigned char addr, unsigned char *tx_buff, unsigned char *rx_buff);
+void TUSS4470_init(TUSS4470_settings *sSettings, unsigned char *tx_buff);
+unsigned char SPI_oddParity(unsigned char hNibble, unsigned char lNibble);
 #endif

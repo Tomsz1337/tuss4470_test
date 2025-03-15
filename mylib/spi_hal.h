@@ -1,19 +1,21 @@
 #ifndef SPI_HAL_H
 #define SPI_HAL_H
-#include <stdint.h>
+#include "hardware/spi.h"
+#include "hardware/gpio.h"
+
+#define SPI_SCK_PIN     2
+#define SPI_MOSI_PIN    3
+#define SPI_MISO_PIN    4
+#define SPI_CSn_PIN     5
 
 typedef void *SPI_Type;
 typedef struct SPI_Config{
     SPI_Type spi;
-    uint8_t cpha;
-	uint8_t cpol;
-	uint8_t csbf;
-    uint8_t spi_sck_pin;
-    uint8_t spi_miso_pin;
-    uint8_t spi_mosi_pin;
-    uint8_t spi_CSn_pin;
-    uint8_t data_bits;
-	uint32_t baud_rate;
+    spi_cpha_t cpha;
+	spi_cpol_t cpol;
+	spi_order_t csbf;
+    uint data_bits;
+	uint baud_rate;
 }SPI_Config;
 
 void SPI_HAL_init(SPI_Config *sSPI_Config);
