@@ -28,9 +28,7 @@ int main()
     gpio_set_dir(12, GPIO_OUT);
     gpio_put(12, 1);
 
-    clock_gpio_init_int_frac8(21, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB, 240, 0);
-
-    sSettings.TUSS4470_SPI_Config.baud_rate = 1000000;
+    sSettings.TUSS4470_SPI_Config.baud_rate = 500000;
     sSettings.TUSS4470_SPI_Config.cpha = 1;
     sSettings.TUSS4470_SPI_Config.cpol = 0;
     sSettings.TUSS4470_SPI_Config.csbf = 0;
@@ -39,20 +37,21 @@ int main()
     //SPI_HAL_init(&sSettings.TUSS4470_SPI_Config);
 
     sSettings.BPF_CONFIG_1 = 0x1E;      // BFP factory trirm | BFP - on | BFP center frequency = 206.05 kHz |
-    sSettings.DEV_CTRL_3 = 0x01;        // IO_MODE_1
-    sSettings.VDRV_CTRL = 0x08;         // VDRV - on | VDRV = 5V | charging current = 20mA
-    sSettings.BURST_PULSE = 0xC0;       // HALF_BRIDGE_MODE - on | PRE_DRIVER - on
-
+    sSettings.DEV_CTRL_3 = 0x80;        // IO_MODE_0
+    sSettings.VDRV_CTRL = 0x10;         // VDRV - on | VDRV = 5V | charging current = 20mA
+    sSettings.BURST_PULSE = 0xC0;       // HALF_BRIDGE_MODE - on | PRE_DRIVER - on | continous burst mode
+    sSettings.TOF_CONFIG = 0x03;        // enable burst
 
 
     TUSS4470_init(&sSettings, tx_buff);
-
+    clock_gpio_init_int_frac8(21, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB, 240, 0);
     while(1)
     {  
         gpio_put(25, 0);
+        //TUSS4470_trigger(&sSettings, tx_buff);
         TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
-
         sleep_ms(500);
+        //TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
         gpio_put(25, 1);
         sleep_ms(500);
     }

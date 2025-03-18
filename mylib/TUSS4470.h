@@ -159,5 +159,5 @@ typedef struct TUSS4470_settings
 void TUSS4470_write(TUSS4470_settings *sSettings, unsigned char addr, unsigned char register_data, unsigned char *tx_buff);
 void TUSS4470_read(TUSS4470_settings *sSettings, unsigned char addr, unsigned char *tx_buff, unsigned char *rx_buff);
 void TUSS4470_init(TUSS4470_settings *sSettings, unsigned char *tx_buff);
-unsigned char SPI_oddParity(unsigned char hNibble, unsigned char lNibble);
+void TUSS4470_trigger(TUSS4470_settings *sSettings, uint8_t *tx_buff);
 #endif
