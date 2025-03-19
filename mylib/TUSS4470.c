@@ -5,7 +5,7 @@
 
 uint8_t SPI_oddParity(uint8_t hNibble, uint8_t lNibble)
 {
-	short SPIframe = (hNibble << 8) | lNibble;
+	uint16_t SPIframe = (hNibble << 8) | lNibble;
 	uint8_t ones = 0;
 	for(int i = 0; i < 16; i++)
 	{
