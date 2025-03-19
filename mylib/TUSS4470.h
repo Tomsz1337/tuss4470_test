@@ -21,7 +21,7 @@ typedef struct TUSS4470_settings
 {
 	SPI_Config TUSS4470_SPI_Config;
 
-	volatile unsigned char BPF_CONFIG_1;/*
+	unsigned char BPF_CONFIG_1;/*
 	7	BPF_FC_TRIM_FRC R/W 0x0 Override factor settings for Bandpass filter trim and control via BPF_FC_TRIM register. Valid only when BPF_BYPASS = 0
 			0x0 = Factory trim
 			0x1 = Override Factory trim
