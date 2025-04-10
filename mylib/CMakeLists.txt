@@ -1,11 +1,16 @@
-add_library(mylib INTERFACE)
-
-target_sources(mylib INTERFACE
+add_library(mylib STATIC
     ${CMAKE_CURRENT_LIST_DIR}/TUSS4470.c
     ${CMAKE_CURRENT_LIST_DIR}/spi_hal.c
+    ${CMAKE_CURRENT_LIST_DIR}/pulse_gen.c
+    ${CMAKE_CURRENT_LIST_DIR}/pulse_gen.pio
 )
 
-target_include_directories(mylib INTERFACE ${CMAKE_CURRENT_LIST_DIR})
+pico_generate_pio_header(mylib ${CMAKE_CURRENT_LIST_DIR}/pulse_gen.pio)
 
-# Pull in pico libraries that we need
-target_link_libraries(mylib INTERFACE pico_stdlib)
+target_include_directories(mylib PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+
+target_link_libraries(mylib
+    pico_stdlib
+    hardware_pio
+    hardware_spi
+)

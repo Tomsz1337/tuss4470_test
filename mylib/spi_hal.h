@@ -11,11 +11,11 @@
 typedef void *SPI_Type;
 typedef struct SPI_Config{
     SPI_Type spi;
-    spi_cpha_t cpha;
-	spi_cpol_t cpol;
-	spi_order_t csbf;
-    uint data_bits;
-	uint baud_rate;
+    uint8_t cpha;
+	uint8_t cpol;
+	uint8_t csbf;
+    uint32_t data_bits;
+	uint32_t baud_rate;
 }SPI_Config;
 
 void SPI_HAL_init(SPI_Config *sSPI_Config);

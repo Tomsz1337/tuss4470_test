@@ -1,7 +1,4 @@
 #include "TUSS4470.h"
-#include "hardware/gpio.h"
-#include "hardware/clocks.h"
-
 
 uint8_t SPI_oddParity(uint8_t hNibble, uint8_t lNibble)
 {
@@ -54,8 +51,5 @@ void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 
 void TUSS4470_trigger(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 {
-	clock_stop(clk_gpout0);
-	TUSS4470_write(sSettings, TOF_CONFIG_addr, 0x00, tx_buff);
-	TUSS4470_write(sSettings, TOF_CONFIG_addr, 0x01, tx_buff);
-	clock_gpio_init_int_frac8(21, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB, 240, 0);
+	
 }

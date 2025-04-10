@@ -32,7 +32,7 @@ project(TUSS4470_test C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
-
+set(ELF2UF2 ${PICO_SDK_PATH}/tools/elf2uf2/elf2uf2)
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(TUSS4470_test main.c )
@@ -52,11 +52,12 @@ target_link_libraries(${PROJECT_NAME}
         hardware_gpio
         mylib)
         
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/mylib)
+add_subdirectory(mylib)
 # Add the standard include files to the build
 target_include_directories(TUSS4470_test PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
         
 )
+
 pico_add_extra_outputs(TUSS4470_test)
 

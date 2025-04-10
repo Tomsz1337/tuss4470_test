@@ -2,8 +2,7 @@
 #include "pico/stdlib.h"
 #include "mylib/TUSS4470.h"
 #include "mylib/spi_hal.h"
-#include "hardware/spi.h"
-#include "hardware/clocks.h"
+#include "mylib/pulse_gen.h"
 
 TUSS4470_settings sSettings;
 uint8_t tx_buff[2];
@@ -44,7 +43,6 @@ int main()
 
 
     TUSS4470_init(&sSettings, tx_buff);
-    clock_gpio_init_int_frac8(21, CLOCKS_CLK_GPOUT0_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB, 240, 0);
     while(1)
     {  
         gpio_put(25, 0);
