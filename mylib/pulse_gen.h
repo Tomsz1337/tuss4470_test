@@ -1,7 +1,6 @@
 #pragma once
 
 #include "hardware/pio.h"
-#include "pico/stdlib.h"
 
-void pulse_gen_program_init(PIO pio, uint sm, uint offset, uint pin);
-void pulse_gen_start(PIO pio, uint sm, uint num_pulses);
+void pulse_gen_program_init(PIO pio, uint32_t sm, uint32_t offset, uint32_t pin, uint32_t freqHz);
+void pulse_gen_start(PIO pio, uint32_t sm, uint32_t num_pulses);
