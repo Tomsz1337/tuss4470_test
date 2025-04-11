@@ -1,5 +1,5 @@
-#ifndef SPI_HAL_H
-#define SPI_HAL_H
+#pragma once
+
 #include "hardware/spi.h"
 #include "hardware/gpio.h"
 
@@ -21,5 +21,3 @@ typedef struct SPI_Config{
 void SPI_HAL_init(SPI_Config *sSPI_Config);
 void SPI_HAL_write(SPI_Config *sSPI_Config, uint8_t *tx_data, uint32_t length);
 void SPI_HAL_read(SPI_Config *sSPI_Config, uint8_t *tx_data,uint8_t *rx_data, uint32_t length);
-
-#endif

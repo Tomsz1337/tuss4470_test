@@ -1,7 +1,6 @@
 #include "spi_hal.h"
 #include <stdint.h>
 
-
 void SPI_HAL_init(SPI_Config *sSPI_Config)
 {
     gpio_set_function(SPI_SCK_PIN, GPIO_FUNC_SPI);
@@ -31,4 +30,3 @@ void SPI_HAL_read(SPI_Config *sSPI_Config, uint8_t *tx_data,uint8_t *rx_data, ui
     spi_write_read_blocking(sSPI_Config->spi, tx_data, rx_data, length);
     gpio_put(SPI_CSn_PIN, true);    
 }
-

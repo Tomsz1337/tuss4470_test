@@ -14,3 +14,5 @@ target_link_libraries(mylib
     hardware_pio
     hardware_spi
 )
+
+target_compile_definitions(mylib PRIVATE RP2040)

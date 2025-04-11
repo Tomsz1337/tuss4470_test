@@ -1,5 +1,10 @@
 #include "pulse_gen.h"
+
+#ifdef RP2040
+
 #include "pulse_gen.pio.h"
+#include "hardware/clocks.h"
+#include "pico/stdlib.h"
 
 void pulse_gen_program_init(PIO pio, uint32_t sm, uint32_t offset, uint32_t pin, uint32_t freqHz) 
 {
@@ -31,3 +36,6 @@ void pulse_gen_start(PIO pio, uint32_t sm, uint32_t num_pulses)
     }
     pio_sm_set_enabled(pio, sm, false);
 }
+#else
+
+#endif
