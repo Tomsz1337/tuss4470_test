@@ -1,7 +1,14 @@
-#ifndef TUSS4470_H
-#define TUSS4470_H
+#pragma once
+
 #include "spi_hal.h"
 #include "hardware/spi.h"
+
+#ifdef RP2040
+
+#include "pulse_gen.h"
+#define PIO_INSTANCE 			pio0
+
+#endif
 
 #define BPF_CONFIG_1_addr		0x10
 #define BPF_CONFIG_2_addr 		0x11
@@ -17,10 +24,13 @@
 #define DEVICE_ID_addr 			0x1D
 #define REV_ID_addr 			0x1E
 
+#define IO1_PIN					0
+#define IO2_PIN					7
+
 typedef struct TUSS4470_settings
 {
 	SPI_Config TUSS4470_SPI_Config;
-
+	uint32_t pio_sm;
 	unsigned char BPF_CONFIG_1;/*
 	7	BPF_FC_TRIM_FRC R/W 0x0 Override factor settings for Bandpass filter trim and control via BPF_FC_TRIM register. Valid only when BPF_BYPASS = 0
 			0x0 = Factory trim
@@ -160,4 +170,4 @@ void TUSS4470_write(TUSS4470_settings *sSettings, unsigned char addr, unsigned c
 void TUSS4470_read(TUSS4470_settings *sSettings, unsigned char addr, unsigned char *tx_buff, unsigned char *rx_buff);
 void TUSS4470_init(TUSS4470_settings *sSettings, unsigned char *tx_buff);
 void TUSS4470_trigger(TUSS4470_settings *sSettings, uint8_t *tx_buff);
-#endif
+
