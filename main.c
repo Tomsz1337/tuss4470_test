@@ -15,7 +15,7 @@ uint8_t rx_buff[2];
 
 int main()
 {
-    start_heartbeat(500);
+    //start_heartbeat(500);
 
     tx_buff[0] = 0x00;
     tx_buff[1] = 0x00;
@@ -48,11 +48,10 @@ int main()
     sSettings.TOF_CONFIG = 0x03;        // enable burst
 
     TUSS4470_init(&sSettings, tx_buff);
-
     while(1)
     {  
         TUSS4470_trigger(&sSettings, tx_buff);
-        TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
+        gpio_put(25, 0);
     }
     return 1;
 }
