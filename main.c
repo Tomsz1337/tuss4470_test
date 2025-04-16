@@ -3,6 +3,11 @@
 #include "mylib/TUSS4470.h"
 #include "mylib/spi_hal.h"
 #include "mylib/pulse_gen.h"
+#include "hardware/timer.h"
+
+#define LED_PIN 25
+
+void start_heartbeat(uint32_t interval_ms);
 
 TUSS4470_settings sSettings;
 uint8_t tx_buff[2];
@@ -10,6 +15,8 @@ uint8_t rx_buff[2];
 
 int main()
 {
+    start_heartbeat(500);
+
     tx_buff[0] = 0x00;
     tx_buff[1] = 0x00;
 
@@ -33,7 +40,6 @@ int main()
     sSettings.TUSS4470_SPI_Config.csbf = 0;
     sSettings.TUSS4470_SPI_Config.data_bits = 8;
     sSettings.TUSS4470_SPI_Config.spi = spi0;
-    //SPI_HAL_init(&sSettings.TUSS4470_SPI_Config);
 
     sSettings.BPF_CONFIG_1 = 0x1E;      // BFP factory trirm | BFP - on | BFP center frequency = 206.05 kHz |
     sSettings.DEV_CTRL_3 = 0x80;        // IO_MODE_0
@@ -41,17 +47,28 @@ int main()
     sSettings.BURST_PULSE = 0xC0;       // HALF_BRIDGE_MODE - on | PRE_DRIVER - on | continous burst mode
     sSettings.TOF_CONFIG = 0x03;        // enable burst
 
-
     TUSS4470_init(&sSettings, tx_buff);
+
     while(1)
     {  
-        gpio_put(25, 0);
-        //TUSS4470_trigger(&sSettings, tx_buff);
+        TUSS4470_trigger(&sSettings, tx_buff);
         TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
-        sleep_ms(500);
-        //TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
-        gpio_put(25, 1);
-        sleep_ms(500);
     }
     return 1;
+}
+
+
+static bool heartbeat_callback(struct repeating_timer *t) {
+    static bool led_on = false;
+    led_on = !led_on;
+    gpio_put(LED_PIN, led_on);
+    return true;
+}
+
+void start_heartbeat(uint32_t interval_ms) {
+    gpio_init(LED_PIN);
+    gpio_set_dir(LED_PIN, GPIO_OUT);
+
+    static struct repeating_timer timer;
+    add_repeating_timer_ms(interval_ms, heartbeat_callback, NULL, &timer);
 }

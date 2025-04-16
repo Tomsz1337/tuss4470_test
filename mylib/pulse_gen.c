@@ -1,4 +1,6 @@
 #include "pulse_gen.h"
+#include "hardware/pio.h"
+
 
 #ifdef RP2040
 
@@ -6,7 +8,12 @@
 #include "hardware/clocks.h"
 #include "pico/stdlib.h"
 
-uint32_t find_free_sm(PIO pio)
+static inline bool pio_sm_is_enabled(PIO pio, uint sm) 
+{
+    return (pio->ctrl & (1u << sm)) != 0;
+}
+
+int8_t find_free_sm(PIO pio)
 {
     for (int sm = 0; sm < 4; ++sm) 
     {
@@ -18,11 +25,11 @@ uint32_t find_free_sm(PIO pio)
     return -1;
 }
 
-uint32_t pulse_gen_program_init(PIO pio, uint32_t pin, uint32_t freqHz) 
+int8_t pulse_gen_program_init(PIO pio, uint32_t pin, uint32_t freqHz) 
 {
     uint32_t offset = pio_add_program(pio, &pulse_gen_program);
     pio_sm_config c = pulse_gen_program_get_default_config(offset);
-    uint32_t sm = find_free_sm(pio);
+    int8_t sm = find_free_sm(pio);
 
     sm_config_set_set_pins(&c, pin, 1);
     pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true);
@@ -41,7 +48,7 @@ uint32_t pulse_gen_program_init(PIO pio, uint32_t pin, uint32_t freqHz)
     return sm;
 }
 
-void pulse_gen_start(PIO pio, uint32_t sm, uint32_t num_pulses)
+void pulse_gen_start(PIO pio, int8_t sm, uint32_t num_pulses)
 {
     pio_sm_put_blocking(pio, sm, num_pulses);
     pio_sm_set_enabled(pio, sm, true);

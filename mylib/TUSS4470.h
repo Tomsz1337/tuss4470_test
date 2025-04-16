@@ -7,6 +7,7 @@
 
 #include "pulse_gen.h"
 #define PIO_INSTANCE 			pio0
+int8_t pioSm;
 
 #endif
 
