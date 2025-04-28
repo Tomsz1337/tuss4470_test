@@ -1,7 +1,7 @@
 .program pulse_gen
 loop:
-    set pins, 1       ; ustaw pin na HIGH
-    nop [30]     ; opóźnienie
-    set pins, 0       ; ustaw pin na LOW
-    nop [30]     ; opóźnienie
-    jmp x-- loop      ; zmniejsz licznik X i jeśli > 0, skocz do loop
+    set pins, 1
+    nop [5]
+    set pins, 0
+    nop [5]
+    

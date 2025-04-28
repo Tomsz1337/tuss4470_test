@@ -2,6 +2,10 @@
 
 #include "spi_hal.h"
 #include "hardware/spi.h"
+<<<<<<< HEAD
+=======
+#include "pulse_gen.h"
+>>>>>>> c01e83a868e35074f85847fa591f88c4f8b807e3
 
 #define BPF_CONFIG_1_addr		0x10
 #define BPF_CONFIG_2_addr 		0x11
@@ -23,7 +27,6 @@
 typedef struct TUSS4470_settings
 {
 	SPI_Config TUSS4470_SPI_Config;
-	uint32_t pio_sm;
 	unsigned char BPF_CONFIG_1;/*
 	7	BPF_FC_TRIM_FRC R/W 0x0 Override factor settings for Bandpass filter trim and control via BPF_FC_TRIM register. Valid only when BPF_BYPASS = 0
 			0x0 = Factory trim

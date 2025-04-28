@@ -1,5 +1,5 @@
 #include "TUSS4470.h"
-
+#include "pico/stdlib.h" 
 uint8_t SPI_oddParity(uint8_t hNibble, uint8_t lNibble)
 {
 	uint16_t SPIframe = (hNibble << 8) | lNibble;
@@ -36,7 +36,12 @@ void TUSS4470_read(TUSS4470_settings *sSettings, uint8_t addr, uint8_t *tx_buff,
 void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 {
 	SPI_HAL_init(&sSettings->TUSS4470_SPI_Config);
+<<<<<<< HEAD
 	
+=======
+	pulse_gen_program_init(pio0, 7, 200000);
+
+>>>>>>> c01e83a868e35074f85847fa591f88c4f8b807e3
 	TUSS4470_write(sSettings, BPF_CONFIG_1_addr, sSettings->BPF_CONFIG_1, tx_buff);
 	TUSS4470_write(sSettings, BPF_CONFIG_2_addr, sSettings->BPF_CONFIG_2, tx_buff);
 	TUSS4470_write(sSettings, DEV_CTRL_1_addr, sSettings->DEV_CTRL_1, tx_buff);
@@ -51,5 +56,10 @@ void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 
 void TUSS4470_trigger(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 {
+	gpio_put(25, 1);
 	
+	pulse_gen_start(pio0, 0, 16);
+	
+	
+	gpio_put(25, 0);
 }

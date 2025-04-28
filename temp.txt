@@ -1,70 +1,74 @@
+#include <stdint.h>
+#include "pico/stdlib.h"
+#include "mylib/TUSS4470.h"
+#include "mylib/spi_hal.h"
+#include "mylib/pulse_gen.h"
+#include "hardware/timer.h"
+
+#define LED_PIN 25
+
+void start_heartbeat(uint32_t interval_ms);
+
+TUSS4470_settings sSettings;
+uint8_t tx_buff[2];
+uint8_t rx_buff[2];
+
+int main()
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Pico Debug (Cortex-Debug)",
-            "cwd": "${userHome}/.pico-sdk/openocd/0.12.0+dev/scripts",
-            "executable": "${command:raspberry-pi-pico.launchTargetPath}",
-            "request": "launch",
-            "type": "cortex-debug",
-            "servertype": "openocd",
-            "serverpath": "${userHome}/.pico-sdk/openocd/0.12.0+dev/openocd.exe",
-            "gdbPath": "${command:raspberry-pi-pico.getGDBPath}",
-            "device": "${command:raspberry-pi-pico.getChipUppercase}",
-            "configFiles": [
-                "interface/cmsis-dap.cfg",
-                "target/${command:raspberry-pi-pico.getTarget}.cfg"
-            ],
-            "svdFile": "${userHome}/.pico-sdk/sdk/2.1.0/src/${command:raspberry-pi-pico.getChip}/hardware_regs/${command:raspberry-pi-pico.getChipUppercase}.svd",
-            "runToEntryPoint": "main",
-            // Fix for no_flash binaries, where monitor reset halt doesn't do what is expected
-            // Also works fine for flash binaries
-            "overrideLaunchCommands": [
-                "monitor reset init",
-                "load \"${command:raspberry-pi-pico.launchTargetPath}\""
-            ],
-            "openOCDLaunchCommands": [
-                "adapter speed 5000"
-            ]
-        },
-        {
-            "name": "Pico Debug (Cortex-Debug with external OpenOCD)",
-            "cwd": "${workspaceRoot}",
-            "executable": "${command:raspberry-pi-pico.launchTargetPath}",
-            "request": "launch",
-            "type": "cortex-debug",
-            "servertype": "external",
-            "gdbTarget": "localhost:3333",
-            "gdbPath": "${command:raspberry-pi-pico.getGDBPath}",
-            "device": "${command:raspberry-pi-pico.getChipUppercase}",
-            "svdFile": "${userHome}/.pico-sdk/sdk/2.1.0/src/${command:raspberry-pi-pico.getChip}/hardware_regs/${command:raspberry-pi-pico.getChipUppercase}.svd",
-            "runToEntryPoint": "main",
-            // Fix for no_flash binaries, where monitor reset halt doesn't do what is expected
-            // Also works fine for flash binaries
-            "overrideLaunchCommands": [
-                "monitor reset init",
-                "load \"${command:raspberry-pi-pico.launchTargetPath}\""
-            ]
-        },
-        {
-            "name": "Pico Debug (C++ Debugger)",
-            "type": "cppdbg",
-            "request": "launch",
-            "cwd": "${workspaceRoot}",
-            "program": "${command:raspberry-pi-pico.launchTargetPath}",
-            "MIMode": "gdb",
-            "miDebuggerPath": "${command:raspberry-pi-pico.getGDBPath}",
-            "miDebuggerServerAddress": "localhost:3333",
-            "debugServerPath": "${userHome}/.pico-sdk/openocd/0.12.0+dev/openocd.exe",
-            "debugServerArgs": "-f interface/cmsis-dap.cfg -f target/${command:raspberry-pi-pico.getTarget}.cfg -c \"adapter speed 5000\"",
-            "serverStarted": "Listening on port .* for gdb connections",
-            "filterStderr": true,
-            "hardwareBreakpoints": {
-                "require": true,
-                "limit": 4
-            },
-            "preLaunchTask": "Flash",
-            "svdPath": "${userHome}/.pico-sdk/sdk/2.1.0/src/${command:raspberry-pi-pico.getChip}/hardware_regs/${command:raspberry-pi-pico.getChipUppercase}.svd"
-        },
-    ]
+    //start_heartbeat(500);
+
+    tx_buff[0] = 0x00;
+    tx_buff[1] = 0x00;
+
+    gpio_set_function(0, UART_FUNCSEL_NUM(uart0, 0));
+    gpio_set_function(1, UART_FUNCSEL_NUM(uart0, 1));
+
+    uart_init(uart0, 115200);
+    uart_puts(uart0, "TUSS4470_debug.\n");
+    
+    gpio_init(25);
+    gpio_set_dir(25, GPIO_OUT);
+    gpio_put(25, 1);
+
+    gpio_init(12);
+    gpio_set_dir(12, GPIO_OUT);
+    gpio_put(12, 1);
+
+    sSettings.TUSS4470_SPI_Config.baud_rate = 500000;
+    sSettings.TUSS4470_SPI_Config.cpha = 1;
+    sSettings.TUSS4470_SPI_Config.cpol = 0;
+    sSettings.TUSS4470_SPI_Config.csbf = 0;
+    sSettings.TUSS4470_SPI_Config.data_bits = 8;
+    sSettings.TUSS4470_SPI_Config.spi = spi0;
+
+    sSettings.BPF_CONFIG_1 = 0x1E;      // BFP factory trirm | BFP - on | BFP center frequency = 206.05 kHz |
+    sSettings.DEV_CTRL_3 = 0x80;        // IO_MODE_0
+    sSettings.VDRV_CTRL = 0x10;         // VDRV - on | VDRV = 5V | charging current = 20mA
+    sSettings.BURST_PULSE = 0xC0;       // HALF_BRIDGE_MODE - on | PRE_DRIVER - on | continous burst mode
+    sSettings.TOF_CONFIG = 0x03;        // enable burst
+
+    TUSS4470_init(&sSettings, tx_buff);
+
+    while(1)
+    {  
+        TUSS4470_trigger(&sSettings, tx_buff);
+        TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
+    }
+    return 1;
+}
+
+
+static bool heartbeat_callback(struct repeating_timer *t) {
+    static bool led_on = false;
+    led_on = !led_on;
+    gpio_put(LED_PIN, led_on);
+    return true;
+}
+
+void start_heartbeat(uint32_t interval_ms) {
+    gpio_init(LED_PIN);
+    gpio_set_dir(LED_PIN, GPIO_OUT);
+
+    static struct repeating_timer timer;
+    add_repeating_timer_ms(interval_ms, heartbeat_callback, NULL, &timer);
 }

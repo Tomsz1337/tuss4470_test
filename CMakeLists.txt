@@ -44,15 +44,15 @@ pico_set_program_version(TUSS4470_test "0.1")
 pico_enable_stdio_uart(TUSS4470_test 0)
 pico_enable_stdio_usb(TUSS4470_test 1)
 
-
+add_subdirectory(mylib)
 # Add the standard library to the build
 target_link_libraries(${PROJECT_NAME}
         pico_stdlib
         hardware_spi
         hardware_gpio
+        hardware_pio
         mylib)
         
-add_subdirectory(mylib)
 # Add the standard include files to the build
 target_include_directories(TUSS4470_test PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}

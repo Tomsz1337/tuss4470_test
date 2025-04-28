@@ -1,0 +1,79 @@
+
+Analiza modularności i przenośności projektu `tuss4470_test`
+===========================================================
+
+✅ Co już działa na korzyść przenośności:
+----------------------------------------
+
+1. Wyodrębniona biblioteka (`mylib`)
+   - Folder `mylib` zawiera `pulse_gen.c/.h`, `tuss4470.c/.h`, czyli logikę sprzętową.
+   - To dobra praktyka przy późniejszym użyciu kodu na innych platformach.
+
+2. Oddzielne pliki `.pio`
+   - Kod PIO trzymany jest osobno, a nagłówki są generowane i dołączane poprawnie.
+
+3. Modularny CMake
+   - `CMakeLists.txt` ma oddzielne dodawanie `mylib`, co sprzyja reużywalności.
+
+🚧 Co ogranicza przenośność i jak to poprawić:
+---------------------------------------------
+
+1. Zależności od Pico SDK bez abstrakcji
+   - Występują bezpośrednie `#include <pico/stdlib.h>`, `#include <hardware/pio.h>`.
+   - To utrudnia przenoszenie np. na STM32, bo wymaga przepisywania kodu.
+
+   ✅ Sugestia: utworzyć warstwę abstrakcji sprzętowej:
+
+   ```c
+   // platform_hal.h
+   void platform_uart_write(const char *str);
+   uint32_t platform_get_time_us(void);
+   void platform_delay_us(uint32_t delay);
+   ```
+
+   A w Pico:
+   ```c
+   #include "pico/stdlib.h"
+   void platform_delay_us(uint32_t delay) {
+       sleep_us(delay);
+   }
+   ```
+
+2. Brak rozdzielenia konfiguracji PIO
+   - `pulse_gen_init()` zawiera bezpośrednią konfigurację PIO.
+
+   ✅ Sugestia: przenieść to do `pulse_gen_platform.c`, a interfejs uprościć:
+
+   ```c
+   bool pulse_gen_start(void); // korzysta z przygotowanego SM
+   ```
+
+3. Domieszki logiki platformowej w `main.c`
+   - Funkcje takie jak `stdio_init_all()` czy `gpio_init()` powinny być w osobnym `platform_init()`.
+
+4. Brak folderu `include/`
+   - Nagłówki warto trzymać w `include/mylib/` i dodać w CMake:
+
+   ```cmake
+   target_include_directories(mylib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+   ```
+
+✨ Bonus – `platform_config.h`
+------------------------------
+
+Można dodać plik konfiguracyjny platformy:
+
+```c
+// platform_config.h
+#define PLATFORM_PICO
+// lub #define PLATFORM_STM32
+```
+
+🔚 Podsumowanie – Co warto zrobić teraz:
+---------------------------------------
+
+1. 🔁 Dodać warstwę HAL (Hardware Abstraction Layer).
+2. 🧽 Rozdzielić logikę PIO od konfiguracji platformowej.
+3. 📁 Przenieść nagłówki do `include/` i ustawić include path.
+4. 📄 Dodać `README.md` z opisem struktury i portowania.
+
