@@ -3,6 +3,7 @@
 #include "mylib/TUSS4470.h"
 #include "mylib/spi_hal.h"
 #include "mylib/pulse_gen.h"
+#include "mylib/pulse_pwm.h"
 
 TUSS4470_settings sSettings;
 uint8_t tx_buff[2];
@@ -33,25 +34,36 @@ int main()
     sSettings.TUSS4470_SPI_Config.csbf = 0;
     sSettings.TUSS4470_SPI_Config.data_bits = 8;
     sSettings.TUSS4470_SPI_Config.spi = spi0;
-    //SPI_HAL_init(&sSettings.TUSS4470_SPI_Config);
+    
 
     sSettings.BPF_CONFIG_1 = 0x1E;      // BFP factory trirm | BFP - on | BFP center frequency = 206.05 kHz |
     sSettings.DEV_CTRL_3 = 0x80;        // IO_MODE_0
-    sSettings.VDRV_CTRL = 0x10;         // VDRV - on | VDRV = 5V | charging current = 20mA
-    sSettings.BURST_PULSE = 0xC0;       // HALF_BRIDGE_MODE - on | PRE_DRIVER - on | continous burst mode
+    sSettings.VDRV_CTRL = 0x0f;         // VDRV - on | VDRV = 25V | charging current = 10mA
+    sSettings.BURST_PULSE = 0x08;       // HALF_BRIDGE_MODE - off | PRE_DRIVER - off | continous burst mode
     sSettings.TOF_CONFIG = 0x03;        // enable burst
 
 
-    TUSS4470_init(&sSettings, tx_buff);
+    //TUSS4470_init(&sSettings, tx_buff);
+    SPI_HAL_init(&sSettings.TUSS4470_SPI_Config);
+
+    TUSS4470_write(&sSettings, 0x10, 0x00, tx_buff);
+    TUSS4470_write(&sSettings, 0x13, 0x00, tx_buff);
+    TUSS4470_write(&sSettings, 0x16, 0x0f, tx_buff);
+    TUSS4470_write(&sSettings, 0x1A, 0x08, tx_buff);
+    TUSS4470_write(&sSettings, 0x17, 0x19, tx_buff);
+
     while(1)
     {  
-        gpio_put(25, 0);
+        //gpio_put(25, 0);
         //TUSS4470_trigger(&sSettings, tx_buff);
-        TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
-        sleep_ms(500);
+        TUSS4470_write(&sSettings, TOF_CONFIG_addr, 0x01, tx_buff);
+        pulse_gen_start_pwm();
+        TUSS4470_write(&sSettings, TOF_CONFIG_addr, 0x00, tx_buff);
         //TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
-        gpio_put(25, 1);
-        sleep_ms(500);
+        sleep_ms(150);
+        //TUSS4470_read(&sSettings, DEV_STAT_addr, tx_buff, rx_buff);
+        //gpio_put(25, 1);
+        //sleep_ms(500);
     }
     return 1;
 }

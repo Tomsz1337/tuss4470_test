@@ -13,7 +13,7 @@ baud_rate = 500000
 ser = serial.Serial(serial_port, baud_rate, timeout=1)
 
 # Parameters for the waterfall chart
-num_samples = 850  # MUSI się zgadzać z Arduino!
+num_samples = 450  # MUSI się zgadzać z Arduino!
 max_cols = 150  # Ilość kolumn (czas)
 
 # Data storage

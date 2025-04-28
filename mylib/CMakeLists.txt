@@ -1,8 +1,9 @@
 add_library(mylib STATIC
     ${CMAKE_CURRENT_LIST_DIR}/TUSS4470.c
     ${CMAKE_CURRENT_LIST_DIR}/spi_hal.c
-    ${CMAKE_CURRENT_LIST_DIR}/pulse_gen.c
-    ${CMAKE_CURRENT_LIST_DIR}/pulse_gen.pio
+    ${CMAKE_CURRENT_LIST_DIR}/pulse_pwm.c
+    #${CMAKE_CURRENT_LIST_DIR}/pulse_gen.c
+    #${CMAKE_CURRENT_LIST_DIR}/pulse_gen.pio
 )
 
 pico_generate_pio_header(mylib ${CMAKE_CURRENT_LIST_DIR}/pulse_gen.pio)
@@ -13,6 +14,10 @@ target_link_libraries(mylib
     pico_stdlib
     hardware_pio
     hardware_spi
+    hardware_irq
+    hardware_timer
+    hardware_pwm
+    hardware_clocks
 )
 
 target_compile_definitions(mylib PRIVATE RP2040)

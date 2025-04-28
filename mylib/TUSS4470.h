@@ -3,13 +3,6 @@
 #include "spi_hal.h"
 #include "hardware/spi.h"
 
-#ifdef RP2040
-
-#include "pulse_gen.h"
-#define PIO_INSTANCE 			pio0
-
-#endif
-
 #define BPF_CONFIG_1_addr		0x10
 #define BPF_CONFIG_2_addr 		0x11
 #define DEV_CTRL_1_addr 		0x12  
