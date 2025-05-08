@@ -38,13 +38,13 @@ void startTransducerBurst()
   TCCR1A = _BV(COM1A0);  // Toggle OC1A (pin 9) on Compare Match
   TCCR1B = _BV(WGM12) | _BV(CS10);  // CTC mode, no prescaler
   
-  //OCR1A = 199; // 40kHz (car parking sensor)
+  OCR1A = 199; // 40kHz (car parking sensor)
   //OCR1A = 160; // 50kHz
   //OCR1A = 120; // 66kHz
   //OCR1A = 80; // 100kHz (chrhartz DIY transducer)
   //OCR1A = 52; // 151kHz (muebau transducer)
   //OCR1A = 39; // 200kHz (Raymarine CPT-S 200kHz)
-  OCR1A = 36; // 216kHz (mini transducer)
+  //OCR1A = 36; // 216kHz (mini transducer)
   //OCR1A = 34; // 230kHz (18mm 200kHz Aliexpress transducer)
   //OCR1A = 22; // 19 cycles at 16 MHz = 350kHz
   //OCR1A = 19; // 400kHz
@@ -141,14 +141,14 @@ void setup()
 
   // Initialize TUSS4470 with specific configurations
   // check TUSS4470 datasheet for more settings!
-  //tuss4470Write(0x10, 0x00);  // Set BPF center frequency to 68kHz
+  tuss4470Write(0x10, 0x00);  // Set BPF center frequency to 68kHz
   //tuss4470Write(0x10, 0x10);  // Set BPF center frequency to 100kHz
   //tuss4470Write(0x10, 0x18); // Set BPF center frequency to 151kHz
-  tuss4470Write(0x10, 0x1E);  // Set BPF center frequency to 200kHz TODO: check why 0x1E and not 0x0F!
+  //tuss4470Write(0x10, 0x1E);  // Set BPF center frequency to 200kHz TODO: check why 0x1E and not 0x0F!
   
   tuss4470Write(0x13, 0x02);
   tuss4470Write(0x16, 0x0f);  // Enable VDRV (not Hi-Z)
-  tuss4470Write(0x1A, 0x04);  // Set burst pulses to 16
+  tuss4470Write(0x1A, 0x0f);  // Set burst pulses to 16
 
   tuss4470Write(0x17, 0x19); // enable threshold detection (Pin 5 and 3 need to be connected to work!)
 
@@ -176,12 +176,19 @@ void loop()
   delayMicroseconds(100);
 
   sampleIndex = 0;
-  for (sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
-    while (!(ADCSRA & (1 << ADIF))); // Wait for conversion to complete
-    ADCSRA |= (1 << ADIF);           // Clear the interrupt flag
-    analogValues[sampleIndex] = ADC;           // Read ADC value
-    if(sampleIndex == BLINDZONE_SAMPLE_END) detectedDepth = false;
+  for (sampleIndex = 0; sampleIndex < numSamples + BLINDZONE_SAMPLE_END; sampleIndex++) {
+  while (!(ADCSRA & (1 << ADIF))); // Wait for conversion to complete
+  ADCSRA |= (1 << ADIF);           // Clear the interrupt flag
+
+  int adcVal = ADC;  // Read ADC value
+
+  if (sampleIndex == BLINDZONE_SAMPLE_END) detectedDepth = false;
+
+  if (sampleIndex >= BLINDZONE_SAMPLE_END) {
+    analogValues[sampleIndex - BLINDZONE_SAMPLE_END] = adcVal;
   }
+}
+
 
   // Wypisanie danych jako CSV przez UART
   for (int i = 0; i < numSamples; i++) {

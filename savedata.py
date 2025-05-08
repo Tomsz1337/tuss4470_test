@@ -3,7 +3,7 @@ import csv
 import time
 
 # Ustawienia portu szeregowego (dopasuj do swojego systemu)
-port = 'COM4'  # Zmień na odpowiedni port
+port = 'COM9'  # Zmień na odpowiedni port
 baudrate = 500000  # Ustawienia zgodne z tymi w Arduino
 
 # Inicjalizacja połączenia szeregowego

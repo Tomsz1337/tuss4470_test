@@ -9,7 +9,7 @@ num_samples = 850             # Ilość próbek w jednej ramce
 max_cols = 150                # Ilość ramek widocznych naraz (X-axis)
 
 # Prędkość dźwięku i czas próbkowania
-speed_of_sound = 1480          # m/s (powietrze)
+speed_of_sound = 340          # m/s (powietrze)
 sample_time = 13.2e-6         # 13.2 mikrosekundy
 sample_resolution = (speed_of_sound * sample_time * 100) / 2  # cm
 
@@ -40,7 +40,7 @@ data = np.zeros((num_samples, max_cols))
 # Konfiguracja wykresu
 plt.ion()
 fig, ax = plt.subplots()
-waterfall = ax.imshow(data, aspect='auto', cmap='viridis', interpolation='nearest', vmin=0, vmax=350)
+waterfall = ax.imshow(data, aspect='auto', cmap='viridis', interpolation='nearest', vmin=2000, vmax=4500)
 plt.colorbar(waterfall, ax=ax)
 
 # Skala osi Y

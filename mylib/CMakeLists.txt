@@ -18,6 +18,7 @@ target_link_libraries(mylib
     hardware_timer
     hardware_pwm
     hardware_clocks
+    hardware_adc
 )
 
 target_compile_definitions(mylib PRIVATE RP2040)
