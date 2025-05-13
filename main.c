@@ -6,6 +6,7 @@
 #include "mylib/pulse_gen.h"
 #include "hardware/timer.h"
 #include "hardware/adc.h"
+#include "hardware/uart.h"
 
 #define LED_PIN 25
 #define numSamples  850
@@ -25,11 +26,14 @@ int main()
 {
     stdio_init_all();
 
+    stdio_uart_init_full(uart0, 1000000, 0, 1);
+
     //start_heartbeat(500);
      // ADC init
     adc_init();
     adc_gpio_init(26);
     adc_select_input(0);
+    //adc_run(true);
 
     tx_buff[0] = 0x00;
     tx_buff[1] = 0x00;
@@ -43,12 +47,13 @@ int main()
 
     //sSettings.BPF_CONFIG_1 = 0x1E;      // BFP factory trirm | BFP - on | BFP center frequency = 206.05 kHz |
     sSettings.BPF_CONFIG_1 = 0x00;      // BFP factory trirm | BFP - on | BFP center frequency = 40 kHz |
-    sSettings.DEV_CTRL_2 = 0x02;
+    sSettings.DEV_CTRL_2 = 0x01;
     sSettings.VDRV_CTRL = 0x0f;
     sSettings.BURST_PULSE = 0x0f;
     sSettings.ECHO_INT_CONFIG = 0x19;
 
     TUSS4470_init(&sSettings, tx_buff);
+    //sleep_ms(10000);
     while(1)
     {  
         sampleIndex = 0;
@@ -59,16 +64,17 @@ int main()
         for (sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) 
         {
             analogValues[sampleIndex] = adc_read();
+            sleep_us(13);
         }
         for (int i = 0; i < numSamples; i++) 
         {
             printf("%d", analogValues[i]);
             printf(i < numSamples - 1 ? "," : "\n");
         }
-        sleep_ms(200);
+        sleep_ms(100);
 
     }
-    return 1;
+    return 0;
 }
 
 

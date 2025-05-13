@@ -40,7 +40,7 @@ data = np.zeros((num_samples, max_cols))
 # Konfiguracja wykresu
 plt.ion()
 fig, ax = plt.subplots()
-waterfall = ax.imshow(data, aspect='auto', cmap='viridis', interpolation='nearest', vmin=2000, vmax=4500)
+waterfall = ax.imshow(data, aspect='auto', cmap='viridis', interpolation='nearest', vmin=0, vmax=3500)
 plt.colorbar(waterfall, ax=ax)
 
 # Skala osi Y

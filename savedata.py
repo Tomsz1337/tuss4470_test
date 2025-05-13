@@ -3,8 +3,8 @@ import csv
 import time
 
 # Ustawienia portu szeregowego (dopasuj do swojego systemu)
-port = 'COM9'  # Zmień na odpowiedni port
-baudrate = 500000  # Ustawienia zgodne z tymi w Arduino
+port = 'COM5'  # Zmień na odpowiedni port
+baudrate = 1000000  # Ustawienia zgodne z tymi w Arduino
 
 # Inicjalizacja połączenia szeregowego
 ser = serial.Serial(port, baudrate, timeout=1)
