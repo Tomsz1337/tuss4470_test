@@ -9,7 +9,9 @@
 #include "hardware/uart.h"
 
 #define LED_PIN 25
-#define numSamples  850
+#define numSamples  1000
+#define USER_BUTTON 24
+
 void start_heartbeat(uint32_t interval_ms);
 
 TUSS4470_settings sSettings;
@@ -17,7 +19,7 @@ uint8_t tx_buff[2];
 uint8_t rx_buff[2];
 
 
-int analogValues[numSamples];
+uint16_t analogValues[numSamples];
 
 volatile int pulseCount = 0;
 volatile int sampleIndex = 0;
@@ -26,10 +28,14 @@ int main()
 {
     stdio_init_all();
 
-    stdio_uart_init_full(uart0, 1000000, 0, 1);
+    //stdio_uart_init_full(uart0, 921600, 0, 1);
+    gpio_init(USER_BUTTON);
+    gpio_pull_up(USER_BUTTON);  
+    sleep_ms(10);                
+    bool button_pressed = !gpio_get(USER_BUTTON);
 
     //start_heartbeat(500);
-     // ADC init
+    // ADC init
     adc_init();
     adc_gpio_init(26);
     adc_select_input(0);
@@ -45,11 +51,17 @@ int main()
     sSettings.TUSS4470_SPI_Config.data_bits = 8;
     sSettings.TUSS4470_SPI_Config.spi = spi0;
 
-    //sSettings.BPF_CONFIG_1 = 0x1E;      // BFP factory trirm | BFP - on | BFP center frequency = 206.05 kHz |
-    sSettings.BPF_CONFIG_1 = 0x00;      // BFP factory trirm | BFP - on | BFP center frequency = 40 kHz |
-    sSettings.DEV_CTRL_2 = 0x01;
+    if(button_pressed)
+    {
+        sSettings.BPF_CONFIG_1 = 0x1E;
+    }
+    else
+    {
+        sSettings.BPF_CONFIG_1 = 0x00;     
+    }
+    sSettings.DEV_CTRL_2 = 0x00;
     sSettings.VDRV_CTRL = 0x0f;
-    sSettings.BURST_PULSE = 0x0f;
+    sSettings.BURST_PULSE = 0x08;
     sSettings.ECHO_INT_CONFIG = 0x19;
 
     TUSS4470_init(&sSettings, tx_buff);
@@ -57,15 +69,24 @@ int main()
     while(1)
     {  
         sampleIndex = 0;
-        TUSS4470_trigger(&sSettings, tx_buff);
-
-        sleep_us(100);
+        if(button_pressed)
+        {
+           TUSS4470_trigger_200kHz(&sSettings, tx_buff);
+           //printf("200kHz\n");
+        }
+        else
+        {
+            TUSS4470_trigger_40kHz(&sSettings, tx_buff);
+            //printf("40kHz\n");
+        }
+        sleep_us(10);
         
         for (sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) 
         {
             analogValues[sampleIndex] = adc_read();
-            sleep_us(13);
+            sleep_us(20);
         }
+        printf("sp\n"); 
         for (int i = 0; i < numSamples; i++) 
         {
             printf("%d", analogValues[i]);

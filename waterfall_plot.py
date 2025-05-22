@@ -4,16 +4,17 @@ import matplotlib.pyplot as plt
 import time
 
 # Parametry
-filename = 'pomiar_adc.csv'   # Twój plik CSV
-num_samples = 850             # Ilość próbek w jednej ramce
-max_cols = 150                # Ilość ramek widocznych naraz (X-axis)
+filename = 'pomiar_adc_200kHz_woda_2.csv'   
+num_samples = 1000             
+max_cols = 150                
 
 # Prędkość dźwięku i czas próbkowania
-speed_of_sound = 340          # m/s (powietrze)
-sample_time = 13.2e-6         # 13.2 mikrosekundy
+speed_of_sound = 1470             # m/s (woda)
+#speed_of_sound = 340             # m/s (powietrze)
+sample_time = 20e-6               # Czas próbkowania (10us)
 sample_resolution = (speed_of_sound * sample_time * 100) / 2  # cm
 
-# Wczytanie danych z CSV do płaskiej listy
+
 def load_flat_data(filename):
     flat_data = []
     with open(filename, mode='r') as file:
@@ -24,7 +25,7 @@ def load_flat_data(filename):
                     flat_data.append(int(value))
     return flat_data
 
-# Wczytanie danych
+# Wczytanie danych z pliku CSV
 data_flat = load_flat_data(filename)
 
 # Dzielenie na ramki
@@ -40,7 +41,7 @@ data = np.zeros((num_samples, max_cols))
 # Konfiguracja wykresu
 plt.ion()
 fig, ax = plt.subplots()
-waterfall = ax.imshow(data, aspect='auto', cmap='viridis', interpolation='nearest', vmin=0, vmax=3500)
+waterfall = ax.imshow(data, aspect='auto', cmap='viridis', interpolation='nearest', vmin=0, vmax=2000)
 plt.colorbar(waterfall, ax=ax)
 
 # Skala osi Y
@@ -57,16 +58,14 @@ ax.set_xlabel('Elapsed Time (samples)')
 
 # Wyświetlanie ramek jedna po drugiej
 for frame in frames:
-    data = np.roll(data, -1, axis=1)   # Przesuń dane w lewo
-    data[:, -1] = frame                # Wstaw nową ramkę po prawej
+    data = np.roll(data, -1, axis=1)   
+    data[:, -1] = frame                
 
     waterfall.set_data(data)
     ax.set_title(f'Waterfall Chart from CSV\nSample Resolution: {sample_resolution:.2f} cm')
     
     fig.canvas.flush_events()
     plt.draw()
-    #plt.pause(0.05)  # Krótka pauza aby był efekt animacji
 
-# Zatrzymanie po przetworzeniu pliku
 plt.ioff()
 plt.show()

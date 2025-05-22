@@ -41,8 +41,8 @@ pico_set_program_name(TUSS4470_test "TUSS4470_test")
 pico_set_program_version(TUSS4470_test "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(TUSS4470_test 1)
-pico_enable_stdio_usb(TUSS4470_test 0)
+pico_enable_stdio_uart(TUSS4470_test 0)
+pico_enable_stdio_usb(TUSS4470_test 1)
 
 add_subdirectory(mylib)
 # Add the standard library to the build
