@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 import time
 
 # Parametry
-filename = 'pomiar_adc_200kHz_woda_2.csv'   
+filename = 'pomiar_adc.csv'   
 num_samples = 1000             
 max_cols = 150                
 
 # Prędkość dźwięku i czas próbkowania
-speed_of_sound = 1470             # m/s (woda)
-#speed_of_sound = 340             # m/s (powietrze)
+#speed_of_sound = 1470             # m/s (woda)
+speed_of_sound = 340             # m/s (powietrze)
 sample_time = 20e-6               # Czas próbkowania (10us)
 sample_resolution = (speed_of_sound * sample_time * 100) / 2  # cm
 
@@ -50,6 +50,7 @@ ax.set_ylabel('Distance (cm)')
 tick_step = 50
 ax.set_yticks(np.arange(0, num_samples, tick_step)[::-1])
 ax.set_yticklabels([f'{dist:.2f}' for dist in np.arange(0, num_samples, tick_step)[::-1] * sample_resolution])
+ax.grid(axis='y', linestyle='--', color='gray', linewidth=0.5)
 
 # Oś X
 ax.set_xticks(np.linspace(0, max_cols - 1, num=10))

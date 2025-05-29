@@ -1,7 +1,16 @@
 .program pulse_gen
+.side_set 1 opt
+
+; Wejście: liczba cykli w OSR
+; Pin: jeden pin z side-set (ustawiony na HIGH/LOW)
+; Domyślny stan po zakończeniu: LOW
+
+pull block
+mov x, osr
+
 loop:
-    set pins, 1
-    nop [5]
-    set pins, 0
-    nop [5]
-    
+    set pins, 1 side 1   ; HIGH
+    nop       side 1 [4]
+    set pins, 0 side 0   ; LOW
+    nop       side 0 [4]
+    jmp x-- loop

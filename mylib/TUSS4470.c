@@ -1,6 +1,7 @@
 #include "TUSS4470.h"
 #include "pico/stdlib.h" 
 #include "hardware/gpio.h"
+#include "pulse_gen.h"
 
 uint8_t SPI_oddParity(uint8_t hNibble, uint8_t lNibble)
 {

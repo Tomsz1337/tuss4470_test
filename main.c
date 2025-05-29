@@ -3,10 +3,10 @@
 #include "pico/stdlib.h"
 #include "mylib/TUSS4470.h"
 #include "mylib/spi_hal.h"
-#include "mylib/pulse_gen.h"
 #include "hardware/timer.h"
 #include "hardware/adc.h"
 #include "hardware/uart.h"
+#include "pulse_gen.h"
 
 #define LED_PIN 25
 #define numSamples  1000
@@ -27,6 +27,8 @@ volatile int sampleIndex = 0;
 int main()
 {
     stdio_init_all();
+
+    pulse_gen_program_init(pio0, 15, 2);
 
     //stdio_uart_init_full(uart0, 921600, 0, 1);
     gpio_init(USER_BUTTON);
@@ -57,7 +59,7 @@ int main()
     }
     else
     {
-        sSettings.BPF_CONFIG_1 = 0x00;     
+        sSettings.BPF_CONFIG_1 = 0x09;     
     }
     sSettings.DEV_CTRL_2 = 0x00;
     sSettings.VDRV_CTRL = 0x0f;
@@ -65,6 +67,8 @@ int main()
     sSettings.ECHO_INT_CONFIG = 0x19;
 
     TUSS4470_init(&sSettings, tx_buff);
+
+    //int sm = pulse_gen_program_init(pio0, 15, 40000);
     //sleep_ms(10000);
     while(1)
     {  
@@ -76,9 +80,15 @@ int main()
         }
         else
         {
-            TUSS4470_trigger_40kHz(&sSettings, tx_buff);
-            //printf("40kHz\n");
+            TUSS4470_write(&sSettings, 0x1B, 0x01, tx_buff);
+            pulse_gen_start(pio0, 0, 8); 
+            sleep_us(200);
+            TUSS4470_write(&sSettings, 0x1B, 0x00, tx_buff);
+            //TUSS4470_trigger_40kHz(&sSettings, tx_buff);
+            printf("40kHz\n");
         }
+        
+        
         sleep_us(10);
         
         for (sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) 
