@@ -38,6 +38,8 @@
     "raspberry-pi-pico.ninjaPath": "${HOME}/.pico-sdk/ninja/v1.12.1/ninja",
     "files.associations": {
         "stdlib.h": "c",
-        "pio.h": "c"
+        "pio.h": "c",
+        "clocks.h": "c",
+        "pulse_gen.pio.h": "c"
     }
 }

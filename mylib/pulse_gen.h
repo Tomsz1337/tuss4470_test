@@ -6,18 +6,23 @@
 extern "C" {
 #endif
 
+typedef struct PIO_settings
+{
+    PIO pio;
+    uint sm;
+}PIO_settings;
+
 /// Inicjalizuje program PIO do generowania impulsów
-/// \param pio        Instancja PIO (np. pio0)
-/// \param pin        Numer pinu do wyjścia PWM
-/// \param freqHz     Częstotliwość impulsów (np. 40000)
-/// \return           Numer maszyny stanu PIO (0-3) lub -1 przy błędzie
-int8_t pulse_gen_program_init(PIO pio, uint pin, uint freqHz);
+/// \param pio        PIO instance (pio0/pio1)
+/// \param pin        Output pin
+/// \param sm         State machine number(0-3)
+void pulse_gen_program_init(PIO_settings *sPIO,uint32_t freqHz, uint pin);
 
 /// Uruchamia generację zadanej liczby impulsów
 /// \param pio        Instancja PIO
 /// \param sm         Numer maszyny stanu
 /// \param pulses     Liczba impulsów do wygenerowania
-void pulse_gen_start(PIO pio, int8_t sm, uint pulses);
+void pulse_gen_start(PIO pio, uint sm, uint32_t nPulses);
 
 #ifdef __cplusplus
 }

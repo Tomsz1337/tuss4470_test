@@ -8,16 +8,12 @@
 #include "hardware/uart.h"
 #include "pulse_gen.h"
 
-#define LED_PIN 25
 #define numSamples  1000
 #define USER_BUTTON 24
-
-void start_heartbeat(uint32_t interval_ms);
 
 TUSS4470_settings sSettings;
 uint8_t tx_buff[2];
 uint8_t rx_buff[2];
-
 
 uint16_t analogValues[numSamples];
 
@@ -28,20 +24,15 @@ int main()
 {
     stdio_init_all();
 
-    pulse_gen_program_init(pio0, 15, 2);
-
     //stdio_uart_init_full(uart0, 921600, 0, 1);
     gpio_init(USER_BUTTON);
     gpio_pull_up(USER_BUTTON);  
     sleep_ms(10);                
     bool button_pressed = !gpio_get(USER_BUTTON);
 
-    //start_heartbeat(500);
-    // ADC init
     adc_init();
     adc_gpio_init(26);
     adc_select_input(0);
-    //adc_run(true);
 
     tx_buff[0] = 0x00;
     tx_buff[1] = 0x00;
@@ -53,13 +44,18 @@ int main()
     sSettings.TUSS4470_SPI_Config.data_bits = 8;
     sSettings.TUSS4470_SPI_Config.spi = spi0;
 
+    sSettings.burstPin = 15;
+    sSettings.nPulses = 8;
+
     if(button_pressed)
     {
         sSettings.BPF_CONFIG_1 = 0x1E;
+        sSettings.freqHz = 200000;
     }
     else
     {
-        sSettings.BPF_CONFIG_1 = 0x09;     
+        sSettings.BPF_CONFIG_1 = 0x04;
+        sSettings.freqHz = 40000;     
     }
     sSettings.DEV_CTRL_2 = 0x00;
     sSettings.VDRV_CTRL = 0x0f;
@@ -68,28 +64,13 @@ int main()
 
     TUSS4470_init(&sSettings, tx_buff);
 
-    //int sm = pulse_gen_program_init(pio0, 15, 40000);
-    //sleep_ms(10000);
     while(1)
     {  
         sampleIndex = 0;
-        if(button_pressed)
-        {
-           TUSS4470_trigger_200kHz(&sSettings, tx_buff);
-           //printf("200kHz\n");
-        }
-        else
-        {
-            TUSS4470_write(&sSettings, 0x1B, 0x01, tx_buff);
-            pulse_gen_start(pio0, 0, 8); 
-            sleep_us(200);
-            TUSS4470_write(&sSettings, 0x1B, 0x00, tx_buff);
-            //TUSS4470_trigger_40kHz(&sSettings, tx_buff);
-            printf("40kHz\n");
-        }
         
+        TUSS4470_trigger(&sSettings, tx_buff);
         
-        sleep_us(10);
+        sleep_us(20);
         
         for (sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) 
         {
@@ -106,20 +87,4 @@ int main()
 
     }
     return 0;
-}
-
-
-static bool heartbeat_callback(struct repeating_timer *t) {
-    static bool led_on = false;
-    led_on = !led_on;
-    gpio_put(LED_PIN, led_on);
-    return true;
-}
-
-void start_heartbeat(uint32_t interval_ms) {
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
-
-    static struct repeating_timer timer;
-    add_repeating_timer_ms(interval_ms, heartbeat_callback, NULL, &timer);
 }

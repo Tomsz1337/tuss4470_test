@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Parametry
-port = 'COM9'          # Twój port
+port = 'COM8'          # Twój port
 baudrate = 115200
 num_samples = 1000      # liczba próbek w jednej ramce
 max_cols = 150          # liczba ramek na osi X wykresu

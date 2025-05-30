@@ -3,7 +3,7 @@ import csv
 import time
 
 # Ustawienia portu szeregowego
-port = 'COM9'  
+port = 'COM8'  
 baudrate = 115200  
 
 ser = serial.Serial(port, baudrate, timeout=1)

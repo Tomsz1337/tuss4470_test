@@ -39,6 +39,7 @@ void TUSS4470_read(TUSS4470_settings *sSettings, uint8_t addr, uint8_t *tx_buff,
 void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 {
 	SPI_HAL_init(&sSettings->TUSS4470_SPI_Config);
+	pulse_gen_program_init(&sSettings->sPIO, sSettings->freqHz, sSettings->burstPin);
 
 	TUSS4470_write(sSettings, BPF_CONFIG_1_addr, sSettings->BPF_CONFIG_1, tx_buff);
 	TUSS4470_write(sSettings, BPF_CONFIG_2_addr, sSettings->BPF_CONFIG_2, tx_buff);
@@ -50,34 +51,12 @@ void TUSS4470_init(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 	TUSS4470_write(sSettings, ZC_CONFIG_addr, sSettings->ZC_CONFIG, tx_buff);
 	TUSS4470_write(sSettings, BURST_PULSE_addr, sSettings->BURST_PULSE, tx_buff);
 	TUSS4470_write(sSettings, TOF_CONFIG_addr, sSettings->TOF_CONFIG, tx_buff);
-
-	gpio_init(15);
-	gpio_set_dir(15, GPIO_OUT);
-	gpio_put(15, 1); 
 }
 
-void TUSS4470_trigger_40kHz(TUSS4470_settings *sSettings, uint8_t *tx_buff)
+void TUSS4470_trigger(TUSS4470_settings *sSettings, uint8_t *tx_buff)
 {
-	uint8_t state = 0;
 	TUSS4470_write(sSettings, 0x1B, 0x01, tx_buff); 
-	for(int i = 0; i < 8; i++)
-	{
-		gpio_put(15, state);
-		state = !state;
-		sleep_us(12);
-	}
-	TUSS4470_write(sSettings, 0x1B, 0x00, tx_buff); 
-}
-
-void TUSS4470_trigger_200kHz(TUSS4470_settings *sSettings, uint8_t *tx_buff)
-{
-	uint8_t state = 0;
-	TUSS4470_write(sSettings, 0x1B, 0x01, tx_buff); 
-	for(int i = 0; i < 8; i++)
-	{
-		gpio_put(15, state);
-		state = !state;
-		sleep_us(3);
-	}
-	TUSS4470_write(sSettings, 0x1B, 0x00, tx_buff); 
+    pulse_gen_start(sSettings->sPIO.pio, sSettings->sPIO.sm, sSettings->nPulses);
+    sleep_us(200);
+    TUSS4470_write(sSettings, 0x1B, 0x00, tx_buff); 
 }
