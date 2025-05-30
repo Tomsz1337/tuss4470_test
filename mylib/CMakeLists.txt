@@ -1,6 +1,7 @@
 add_library(mylib STATIC
     ${CMAKE_CURRENT_LIST_DIR}/TUSS4470.c
     ${CMAKE_CURRENT_LIST_DIR}/spi_hal.c
+    ${CMAKE_CURRENT_LIST_DIR}/adc_hal.c
     ${CMAKE_CURRENT_LIST_DIR}/pulse_gen.c
     ${CMAKE_CURRENT_LIST_DIR}/pulse_gen.pio
 )
@@ -18,6 +19,7 @@ target_link_libraries(mylib
     hardware_pwm
     hardware_clocks
     hardware_adc
+    hardware_dma
 )
 
 target_compile_definitions(mylib PRIVATE RP2040)

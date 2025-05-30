@@ -6,7 +6,7 @@
 #include "hardware/timer.h"
 #include "hardware/adc.h"
 #include "hardware/uart.h"
-#include "pulse_gen.h"
+#include "mylib/adc_hal.h"
 
 #define numSamples  1000
 #define USER_BUTTON 24
@@ -15,7 +15,7 @@ TUSS4470_settings sSettings;
 uint8_t tx_buff[2];
 uint8_t rx_buff[2];
 
-uint16_t analogValues[numSamples];
+//uint16_t analogValues[numSamples];
 
 volatile int pulseCount = 0;
 volatile int sampleIndex = 0;
@@ -49,12 +49,12 @@ int main()
 
     if(button_pressed)
     {
-        sSettings.BPF_CONFIG_1 = 0x1E;
+        sSettings.BPF_CONFIG_1 = 0x1D;
         sSettings.freqHz = 200000;
     }
     else
     {
-        sSettings.BPF_CONFIG_1 = 0x04;
+        sSettings.BPF_CONFIG_1 = 0x09;
         sSettings.freqHz = 40000;     
     }
     sSettings.DEV_CTRL_2 = 0x00;
@@ -63,6 +63,7 @@ int main()
     sSettings.ECHO_INT_CONFIG = 0x19;
 
     TUSS4470_init(&sSettings, tx_buff);
+
 
     while(1)
     {  
@@ -87,4 +88,4 @@ int main()
 
     }
     return 0;
-}
+} 
